@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Milk Production</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #e67e22;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #d35400;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .date-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #eee;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        <h1>Milk Production</h1>
+
+        <!-- Date Selector -->
+        <div class="date-selector">
+            <form action="/production" method="get" style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                <label style="margin: 0;">View Date:</label>
+                <input type="date" name="date" th:value="${viewDate}" style="width: auto;">
+                <button type="submit" style="padding: 5px 15px; background: #7f8c8d;">Go</button>
+            </form>
+        </div>
+
+        <!-- Record Form -->
+        <div
+            style="background: #fff8e1; padding: 20px; border-radius: 5px; margin-bottom: 30px; border: 1px solid #ffe0b2;">
+            <h2>Record New Entry</h2>
+            <form action="/production/add" method="post">
+                <input type="hidden" name="date" th:value="${viewDate}">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cow:</label>
+                        <select name="cowId" required>
+                            <option value="">Select Cow</option>
+                            <option th:each="cow : ${cows}" th:value="${cow.cowId}"
+                                th:text="${cow.name + ' (' + cow.breed + ')'}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Shift:</label>
+                        <select name="shift">
+                            <option value="Morning">Morning</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity (L):</label>
+                        <input type="number" step="0.01" name="quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fat (%):</label>
+                        <input type="number" step="0.1" name="fatContent" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Temp (°C):</label>
+                        <input type="number" step="0.1" name="temperature" required>
+                    </div>
+                </div>
+
+                <button type="submit">Save Record</button>
+            </form>
+        </div>
+
+        <!-- Records List -->
+        <h2>Records for <span th:text="${viewDate}"></span></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Shift</th>
+                    <th>Quantity</th>
+                    <th>Fat %</th>
+                    <th>Temp</th>
+                    <th>Quality</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="record : ${records}">
+                    <td th:text="${record.cowId}">1</td>
+                    <td th:text="${record.shift}">Morning</td>
+                    <td th:text="${record.quantity} + ' L'">12.5 L</td>
+                    <td th:text="${record.fatContent} + '%'">4.2%</td>
+                    <td th:text="${record.temperature} + '°C'">7.0°C</td>
+                    <td>
+                        <span th:text="${record.quality}"
+                            th:style="${record.quality == 'Good' ? 'color: green; font-weight: bold;' : (record.quality == 'Poor' ? 'color: red;' : 'color: orange;')}">
+                            Good
+                        </span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(records)}">
+                    <td colspan="6" style="text-align: center;">No records found for this date.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

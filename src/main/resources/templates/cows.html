@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Manage Cows</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/choices.min.css}" />
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00b894;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Form Styles */
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            border: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f9f9f9;
+        }
+
+        .error {
+            color: #d63031;
+            background: #ff767522;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d63031;
+        }
+
+        /* Choices.js Customization */
+        .choices__inner {
+            border-radius: 8px;
+            border: 2px solid #eee;
+            background-color: white;
+            padding: 5px 10px;
+        }
+
+        .choices__input {
+            background-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <h1>Manage Cows</h1>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <!-- Add Cow Form -->
+        <div class="form-card">
+            <h2>Add New Cow</h2>
+            <form action="/cows/add" method="post" th:object="${newCow}">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" name="name" placeholder="e.g. Gauri" required>
+                </div>
+                <div class="form-group">
+                    <label>Breed:</label>
+                    <select id="breed-select" name="breed" required>
+                        <option value="">Select a breed...</option>
+                        <optgroup label="Exotic Breeds">
+                            <option value="Holstein Friesian">Holstein Friesian</option>
+                            <option value="Jersey">Jersey</option>
+                            <option value="Brown Swiss">Brown Swiss</option>
+                            <option value="Ayrshire">Ayrshire</option>
+                            <option value="Guernsey">Guernsey</option>
+                        </optgroup>
+                        <optgroup label="Indian Milch Breeds">
+                            <option value="Gir">Gir</option>
+                            <option value="Sahiwal">Sahiwal</option>
+                            <option value="Red Sindhi">Red Sindhi</option>
+                            <option value="Tharparkar">Tharparkar</option>
+                            <option value="Rathi">Rathi</option>
+                        </optgroup>
+                        <optgroup label="Indian Dual Purpose">
+                            <option value="Hariana">Hariana</option>
+                            <option value="Kankrej">Kankrej</option>
+                            <option value="Ongole">Ongole</option>
+                            <option value="Krishna Valley">Krishna Valley</option>
+                            <option value="Deoni">Deoni</option>
+                        </optgroup>
+                        <optgroup label="Other Indigenous">
+                            <option value="Hallikar">Hallikar</option>
+                            <option value="Amritmahal">Amritmahal</option>
+                            <option value="Khillari">Khillari</option>
+                            <option value="Kangayam">Kangayam</option>
+                            <option value="Bargur">Bargur</option>
+                            <option value="Umblachery">Umblachery</option>
+                            <option value="Malvi">Malvi</option>
+                            <option value="Nagori">Nagori</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth:</label>
+                    <input type="date" name="dateOfBirth" required>
+                </div>
+                <button type="submit">Add Cow</button>
+            </form>
+        </div>
+
+        <!-- Cow List -->
+        <h2>Registered Cows</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Breed</th>
+                    <th>Date of Birth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cow : ${cows}">
+                    <td th:text="${cow.cowId}">1</td>
+                    <td th:text="${cow.name}">Bessie</td>
+                    <td th:text="${cow.breed}">Holstein</td>
+                    <td th:text="${cow.dateOfBirth}">2020-01-01</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(cows)}">
+                    <td colspan="4" style="text-align: center; color: #636e72;">No cows registered yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/choices.min.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const element = document.querySelector('#breed-select');
+            if (element) {
+                const choices = new Choices(element, {
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    placeholder: true,
+                    placeholderValue: 'Select a breed...',
+                    shouldSort: false
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

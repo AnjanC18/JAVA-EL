@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Monthly Analysis</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #8e44ad;
+            color: white;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .filter-box {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+        }
+
+        button {
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        <h1>Monthly Analysis Report</h1>
+
+        <div class="filter-box">
+            <form action="/analysis" method="get">
+                <label>Month:</label>
+                <input type="number" name="month" th:value="${month}" min="1" max="12">
+                <label>Year:</label>
+                <input type="number" name="year" th:value="${year}" min="2000" max="2100">
+                <button type="submit">Generate Report</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Cow Name</th>
+                    <th>Total Milk (L)</th>
+                    <th>Morning (L)</th>
+                    <th>Evening (L)</th>
+                    <th>Avg Fat %</th>
+                    <th>Records</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${stats}">
+                    <td th:text="${stat.cowName}" style="font-weight: bold;">Ganga</td>
+                    <td th:text="${#numbers.formatDecimal(stat.totalMilk, 1, 2)}">150.00</td>
+                    <td th:text="${#numbers.formatDecimal(stat.morningMilk, 1, 2)}">80.00</td>
+                    <td th:text="${#numbers.formatDecimal(stat.eveningMilk, 1, 2)}">70.00</td>
+                    <td th:text="${#numbers.formatDecimal(stat.averageFat, 1, 2)} + '%'">4.20%</td>
+                    <td th:text="${stat.recordCount}">30</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(stats)}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">No data found for this period.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
