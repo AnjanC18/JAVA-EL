@@ -89,6 +89,34 @@ public class DairyDAO {
         return records;
     }
 
+    public void deleteCow(int cowId) throws SQLException {
+        String deleteProductionSql = "DELETE FROM milk_production WHERE cow_id = ?";
+        String deleteCowSql = "DELETE FROM cows WHERE cow_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            try (PreparedStatement pstmtProduction = conn.prepareStatement(deleteProductionSql);
+                    PreparedStatement pstmtCow = conn.prepareStatement(deleteCowSql)) {
+
+                // Delete production records first
+                pstmtProduction.setInt(1, cowId);
+                pstmtProduction.executeUpdate();
+
+                // Delete cow
+                pstmtCow.setInt(1, cowId);
+                pstmtCow.executeUpdate();
+
+                conn.commit(); // Commit transaction
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on error
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Reset auto-commit
+            }
+        }
+    }
+
     public List<MonthlyStats> getMonthlyAnalysis(int month, int year) throws SQLException {
         List<MonthlyStats> stats = new ArrayList<>();
         String sql = """

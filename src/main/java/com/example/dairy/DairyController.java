@@ -77,6 +77,16 @@ public class DairyController {
         return "redirect:/cows";
     }
 
+    @PostMapping("/cows/delete/{id}")
+    public String deleteCow(@PathVariable int id) {
+        try {
+            dao.deleteCow(id);
+        } catch (SQLException e) {
+            return "redirect:/cows?error=" + e.getMessage();
+        }
+        return "redirect:/cows";
+    }
+
     @GetMapping("/production")
     public String viewProduction(@RequestParam(required = false) String date, Model model) {
         LocalDate viewDate = (date == null || date.isEmpty()) ? LocalDate.now() : LocalDate.parse(date);
